@@ -16,7 +16,6 @@ describe("Erc20Token", function () {
     const Erc20Token = await ethers.getContractFactory('Erc20Token', acc1)
     erc20token = await Erc20Token.deploy()
     await erc20token.deployed()  
-    //console.log("deployed to:", voting.address);
   })
 
 

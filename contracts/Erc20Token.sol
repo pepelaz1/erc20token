@@ -30,7 +30,7 @@ contract Erc20Token {
     }
 
     function decimals() public pure returns (uint8) {
-        return 2;
+        return 18;
     }
 
     function totalSupply() public view returns (uint256) {
