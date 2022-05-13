@@ -3,11 +3,11 @@ pragma solidity ^0.8.0;
 
 contract Erc20Token {
 
-    uint256 private totalAmount;
+    uint256 private totalAmount = 10000;
 
-    string private tokenName;
+    string private tokenName = "Pepelaz";
 
-    string private tokenSymbol;
+    string private tokenSymbol = "PPLZ";
 
     mapping(address => uint256) balances;   
 
@@ -17,10 +17,14 @@ contract Erc20Token {
     
     event Transfer(address indexed from, address indexed to, uint tokens);
 
-    constructor(string memory _name, string memory _symbol, uint256 _totalAmount) {
-        tokenName = _name;
-        tokenSymbol = _symbol;
-        totalAmount = _totalAmount;
+    // constructor(string memory _name, string memory _symbol, uint256 _totalAmount) {
+    //     tokenName = _name;
+    //     tokenSymbol = _symbol;
+    //     totalAmount = _totalAmount;
+    // }
+
+    constructor() {
+        balances[msg.sender] = totalAmount;
     }
 
     function name() public view returns (string memory) {
@@ -48,7 +52,7 @@ contract Erc20Token {
     }
 
     function transfer(address _to, uint256 _amount) public returns (bool) {
-        require(_amount <= balances[msg.sender],"");
+        require(_amount <= balances[msg.sender],"Not possible to transfer more than exising amount");
         balances[msg.sender] = balances[msg.sender] - _amount;
         balances[_to] = balances[_to] + _amount;
         emit Transfer(msg.sender, _to, _amount);
@@ -62,8 +66,8 @@ contract Erc20Token {
     }
 
     function transferFrom(address _from, address _to, uint _amount) public returns (bool) {
-        require(_amount <= balances[_from],"");
-        require(_amount <= allowed[_from][msg.sender],"");
+        require(_amount <= balances[_from], "Not possible to transfer more than exising amount");
+        require(_amount <= allowed[_from][msg.sender], "Not possible to transfer more than approved amount");
         balances[_from] = balances[_from] - _amount;
         allowed[_from][msg.sender] = allowed[_from][msg.sender] - _amount;
         balances[_to] = balances[_to] + _amount;
@@ -71,14 +75,14 @@ contract Erc20Token {
         return true;
     }
 
-    function _mint(address _account, uint256 _amount) internal  {
+    function mint(address _account, uint256 _amount) public  {
         totalAmount += _amount;
         balances[_account] += _amount;
         emit Transfer(address(0), _account, _amount);
     }
 
-     function _burn(address _account, uint256 _amount) internal  {
-        require(_amount <= balances[_account],"");
+     function burn(address _account, uint256 _amount) public  {
+        require(_amount <= balances[_account], "Not possible to burn more than exising amount");
         balances[_account] = balances[_account] - _amount;
         totalAmount -= _amount;
         emit Transfer(_account, address(0), _amount);
