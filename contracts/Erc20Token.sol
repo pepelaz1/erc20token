@@ -3,11 +3,11 @@ pragma solidity ^0.8.0;
 
 contract Erc20Token {
 
-    uint256 private totalAmount = 10000;
+    uint256  private totalAmount = 10000e18;
 
-    string private tokenName = "Pepelaz";
+    string  constant private tokenName = "Pepelaz";
 
-    string private tokenSymbol = "PPLZ";
+    string constant private tokenSymbol = "PPLZ";
 
     mapping(address => uint256) balances;   
 
