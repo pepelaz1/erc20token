@@ -17,12 +17,6 @@ contract Erc20Token {
     
     event Transfer(address indexed from, address indexed to, uint tokens);
 
-    // constructor(string memory _name, string memory _symbol, uint256 _totalAmount) {
-    //     tokenName = _name;
-    //     tokenSymbol = _symbol;
-    //     totalAmount = _totalAmount;
-    // }
-
     constructor() {
         balances[msg.sender] = totalAmount;
     }
@@ -36,7 +30,7 @@ contract Erc20Token {
     }
 
     function decimals() public pure returns (uint8) {
-        return 18;
+        return 2;
     }
 
     function totalSupply() public view returns (uint256) {
