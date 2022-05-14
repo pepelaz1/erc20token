@@ -94,7 +94,6 @@ contract Erc20Token {
     }
 
     function mint(address _account, uint256 _amount) onlyOwner public  {
-        //require(_amount <= balances[_account], "Not possible to burn more than exising amount");
         totalAmount += _amount;
         balances[_account] += _amount;
         emit Transfer(address(0), _account, _amount);
