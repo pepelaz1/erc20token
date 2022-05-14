@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 contract Erc20Token {
 
-    address private  owner;
+    address private immutable owner;
 
     uint256  private totalAmount = 10000e18;
 
@@ -26,7 +26,7 @@ contract Erc20Token {
 
     constructor() {
         owner = msg.sender;
-        balances[owner] = totalAmount;
+        balances[msg.sender] = totalAmount;
     }
 
     function name() public view returns (string memory) {
