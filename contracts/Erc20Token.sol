@@ -3,6 +3,8 @@ pragma solidity ^0.8.0;
 
 contract Erc20Token {
 
+    address private  owner;
+
     uint256  private totalAmount = 10000e18;
 
     string  constant private tokenName = "Pepelaz";
@@ -17,8 +19,14 @@ contract Erc20Token {
     
     event Transfer(address indexed from, address indexed to, uint tokens);
 
+    modifier onlyOwner {
+        require(msg.sender == owner, "This operation is available only to the owner");
+        _;
+    }
+
     constructor() {
-        balances[msg.sender] = totalAmount;
+        owner = msg.sender;
+        balances[owner] = totalAmount;
     }
 
     function name() public view returns (string memory) {
@@ -29,7 +37,7 @@ contract Erc20Token {
         return tokenSymbol;
     }
 
-    function decimals() public pure returns (uint8) {
+    function decimals() public view returns (uint8) {
         return 18;
     }
 
@@ -47,37 +55,54 @@ contract Erc20Token {
 
     function transfer(address _to, uint256 _amount) public returns (bool) {
         require(_amount <= balances[msg.sender],"Not possible to transfer more than exising amount");
-        balances[msg.sender] = balances[msg.sender] - _amount;
-        balances[_to] = balances[_to] + _amount;
+        balances[msg.sender] -= _amount;
+        balances[_to] += _amount;
         emit Transfer(msg.sender, _to, _amount);
         return true;
     }
 
     function approve(address _spender, uint256 _amount) public returns (bool) {
-        allowed[msg.sender][_spender] = _amount;
-        emit Approval(msg.sender, _spender, _amount);
+        _approve(msg.sender, _spender, _amount);
+        return true;
+    }
+
+    function _approve(address _owner, address _spender, uint256 _amount) private {
+         allowed[_owner][_spender] = _amount;
+        emit Approval(_owner, _spender, _amount);
+    }
+
+    function increaseAllowance(address _spender, uint256 _added) public returns (bool) {
+        _approve(msg.sender, _spender, allowance(msg.sender, _spender) + _added);
+        return true;
+    }
+
+    function decreaseAllowance(address _spender, uint256 _subtracted) public returns (bool) {
+        uint256 current = allowance(msg.sender, _spender);
+        require(current >= _subtracted, "Not possible to decrease less than zero");
+        _approve(owner, _spender, current - _subtracted);
         return true;
     }
 
     function transferFrom(address _from, address _to, uint _amount) public returns (bool) {
         require(_amount <= balances[_from], "Not possible to transfer more than exising amount");
         require(_amount <= allowed[_from][msg.sender], "Not possible to transfer more than approved amount");
-        balances[_from] = balances[_from] - _amount;
-        allowed[_from][msg.sender] = allowed[_from][msg.sender] - _amount;
-        balances[_to] = balances[_to] + _amount;
+        balances[_from] -= _amount;
+        allowed[_from][msg.sender] -= _amount;
+        balances[_to] += _amount;
         emit Transfer(_from, _to, _amount);
         return true;
     }
 
-    function mint(address _account, uint256 _amount) public  {
+    function mint(address _account, uint256 _amount) onlyOwner public  {
+        //require(_amount <= balances[_account], "Not possible to burn more than exising amount");
         totalAmount += _amount;
         balances[_account] += _amount;
         emit Transfer(address(0), _account, _amount);
     }
 
-     function burn(address _account, uint256 _amount) public  {
+     function burn(address _account, uint256 _amount) onlyOwner public  {
         require(_amount <= balances[_account], "Not possible to burn more than exising amount");
-        balances[_account] = balances[_account] - _amount;
+        balances[_account] -= _amount;
         totalAmount -= _amount;
         emit Transfer(_account, address(0), _amount);
     }
